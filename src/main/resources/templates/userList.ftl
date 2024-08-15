@@ -16,7 +16,6 @@
                 <td><#list user.roles as role>${role}<#sep>, </#list></td>
                 <td><a href="/user/${user.id}" class="btn btn-secondary">edit</a>
                     <form action="/user/${user.id}/delete" method="post" style="display:inline;">
-<#--                        <input type="hidden" name="_method" value="delete"> <!-- Эмитируем метод DELETE &ndash;&gt;-->
                         <input type="hidden" name="_csrf" value="${_csrf.token}">
                         <button type="submit" class="btn btn-danger btn-sm">delete</button>
                     </form>
@@ -26,6 +25,5 @@
         </tbody>
 
     </table>
-    <br><span><a href="/user" class="btn btn-secondary me-2">User list</a></span>
-    <br><span><a href="/main" class="btn btn-secondary me-2">Main page</a></span>
+    <a href="/main" class="btn btn-primary">Main page</a>
 </@c.page>

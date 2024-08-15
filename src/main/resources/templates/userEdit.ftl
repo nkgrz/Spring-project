@@ -12,5 +12,8 @@
         <input type="hidden" name="_csrf" value="${_csrf.token}">
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
-    <br><span><a href="/" class="btn btn-secondary me-2">Main page</a></span>
+    <div>
+        <br><a href="/user" class="btn btn-primary me-3">User list</a>
+        <a href="/main" class="btn btn-primary me-2">Main page</a>
+    </div>
 </@c.page>
