@@ -32,7 +32,7 @@
                 <th>Текст</th>
                 <th>Тег</th>
                 <th>Автор</th>
-                <th>Img</th>
+                <th>Image</th>
             </tr>
             </thead>
             <tbody>
@@ -42,11 +42,14 @@
                     <td>${msg.text}</td>
                     <td>${msg.tag}</td>
                     <td>${msg.authorName}</td>
-                    <td><div>
+                    <td>
+                        <div>
                             <#if msg.filename??>
-                                <img src="/img/${msg.filename}" alt="image" style="max-width: 200px; max-height: 100px;">
+                                <img src="/img/${msg.filename}" alt="image"
+                                     style="max-width: 200px; max-height: 100px;">
                             </#if>
-                        </div></td>
+                        </div>
+                    </td>
                 </tr>
             </#list>
             </tbody>
