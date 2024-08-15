@@ -11,3 +11,5 @@ spring:
         template-loader-path: classpath:/templates/
         suffix: .ftl
         expose-request-attributes: true
+upload:
+    path: /Users/nikita/Desktop/CURRENT_TASKS/JavaProjects/learning-spring/src/main/uploads/
