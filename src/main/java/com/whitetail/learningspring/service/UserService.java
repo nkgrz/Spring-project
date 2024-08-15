@@ -1,7 +1,6 @@
 package com.whitetail.learningspring.service;
 
 import com.whitetail.learningspring.domain.User;
-import com.whitetail.learningspring.repository.MessageRepository;
 import com.whitetail.learningspring.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +15,13 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
+    private final MessageService messageService;
 
     @Autowired
     public UserService(UserRepository userRepository,
-                       MessageRepository messageRepository) {
+                       MessageService messageService) {
         this.userRepository = userRepository;
-        this.messageRepository = messageRepository;
+        this.messageService = messageService;
     }
 
     @Override
@@ -36,7 +35,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        messageRepository.deleteByAuthor_Id(userId);
+        messageService.deleteMessages(userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);
