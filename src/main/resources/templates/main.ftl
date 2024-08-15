@@ -7,10 +7,11 @@
     </div>
     <br><br>
     <div>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <h3>Добавить сообщение</h3>
             <label><input type="text" class="col" name="text" placeholder="Введите сообщение"/></label>
             <label><input type="text" class="col" name="tag" placeholder="Тег"></label>
+            <input type="file" name="file">
             <button type="submit" class="btn btn-primary">Добавить</button>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         </form>
@@ -31,6 +32,7 @@
                 <th>Текст</th>
                 <th>Тег</th>
                 <th>Автор</th>
+                <th>Img</th>
             </tr>
             </thead>
             <tbody>
@@ -40,6 +42,11 @@
                     <td>${msg.text}</td>
                     <td>${msg.tag}</td>
                     <td>${msg.authorName}</td>
+                    <td><div>
+                            <#if msg.filename??>
+                                <img src="/img/${msg.filename}" alt="image" style="max-width: 200px; max-height: 100px;">
+                            </#if>
+                        </div></td>
                 </tr>
             </#list>
             </tbody>
