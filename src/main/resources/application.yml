@@ -1,0 +1,13 @@
+spring:
+    application:
+        name: learning-spring
+    datasource:
+        url: jdbc:postgresql://localhost:5432/postgres
+        username: postgres
+        password: pg4sfEd3
+    jpa:
+        generate-ddl: true
+    freemarker:
+        template-loader-path: classpath:/templates/
+        suffix: .ftl
+        expose-request-attributes: true
