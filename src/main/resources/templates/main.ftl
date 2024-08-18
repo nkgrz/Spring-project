@@ -1,66 +1,83 @@
 <#import "parts/common.ftl" as c>
-<#import "parts/login.ftl" as l>
 <@c.page>
-    <div class="navbar justify-content-end">
-        <span><a href="/user" class="btn btn-secondary me-2">User list</a></span>
-        <@l.logout></@l.logout>
+    <h3>List of messages</h3>
+
+    <div class="form-row">
+        <div class="form-group col-md-6 mb-5">
+            <form method="get" action="/main" class="form-inline">
+                <label>
+                    <input type="text" name="tag" class="form-control" placeholder="Search by tag" value="${tag!""}">
+                </label>
+                <button type="submit" class="btn btn-primary ms-2">Search</button>
+            </form>
+        </div>
     </div>
-    <br><br>
-    <div>
-        <form method="post" enctype="multipart/form-data">
-            <h3>Добавить сообщение</h3>
-            <label><input type="text" class="col" name="text" placeholder="Введите сообщение"/></label>
-            <label><input type="text" class="col" name="tag" placeholder="Тег"></label>
-            <input type="file" name="file">
-            <button type="submit" class="btn btn-primary">Добавить</button>
+
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapseForm" role="button" aria-expanded="false"
+       aria-controls="collapseExample">
+        New message
+    </a>
+
+    <div class="collapse" id="collapseForm">
+        <div class="form-group mt-3" style="max-width: 500px;">
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group mt-2">
+                    <label for="messageText" class="form-label">Message</label>
+                    <input type="text" id="messageText" class="form-control" name="text" placeholder="Enter a message"/>
+                </div>
+
+                <div class="form-group mt-2">
+                    <label for="messageTag" class="form-label">Tag</label>
+                    <input type="text" id="messageTag" class="form-control" name="tag" placeholder="Tag"/>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="customFile" class="form-label">Choose file</label>
+                    <input type="file" class="form-control" name="file" id="customFile"/>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Add message</button>
+                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+            </form>
+        </div>
+    </div>
+
+    <#if messages?has_content>
+        <div class="container mt-4">
+            <div class="row">
+                <#list messages as msg>
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">${msg.authorName}</h5>
+                                <p class="card-text">${msg.text}</p>
+                                <#if msg.filename??>
+                                    <div class="text-center mb-3">
+                                        <img src="/img/${msg.filename}" alt="image" class="img-fluid rounded"
+                                             style="max-width: 100%; height: auto;">
+                                    </div>
+                                </#if>
+                                <span class="badge bg-secondary">${msg.tag}</span>
+                            </div>
+                        </div>
+                    </div>
+                </#list>
+            </div>
+        </div>
+    <#else>
+        <div class="container mt-4 text-center">
+            <div class="alert alert-info" role="alert">
+                No messages available.
+            </div>
+        </div>
+    </#if>
+
+    <div class="mb3">
+        <form method="post" action="delete">
+            <button type="submit" class="btn btn-warning">Delete all message</button>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         </form>
     </div>
 
-    <br><h3>Список сообщений</h3>
-    <form method="get" action="/main">
-        <label><input type="text" name="tag" value="${tag!""}" placeholder="Поиск по тегу"></label>
-        <button type="submit" class="btn btn-primary">Найти</button>
-    </form>
-
-
-    <#if messages?has_content>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>ID сообщения</th>
-                <th>Текст</th>
-                <th>Тег</th>
-                <th>Автор</th>
-                <th>Image</th>
-            </tr>
-            </thead>
-            <tbody>
-            <#list messages as msg>
-                <tr>
-                    <td>${msg.id}</td>
-                    <td>${msg.text}</td>
-                    <td>${msg.tag}</td>
-                    <td>${msg.authorName}</td>
-                    <td>
-                        <div>
-                            <#if msg.filename??>
-                                <img src="/img/${msg.filename}" alt="image"
-                                     style="max-width: 200px; max-height: 100px;">
-                            </#if>
-                        </div>
-                    </td>
-                </tr>
-            </#list>
-            </tbody>
-        </table>
-    <#else>
-        No messages available.
-    </#if>
-    <br><br>
-    <form method="post" action="delete">
-        <button type="submit" class="btn btn-warning">Удалить все</button>
-        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-    </form>
 
 </@c.page>
