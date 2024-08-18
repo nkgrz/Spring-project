@@ -1,10 +1,7 @@
 package com.whitetail.learningspring.controller;
 
-import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.Role;
 import com.whitetail.learningspring.domain.User;
-import com.whitetail.learningspring.repository.MessageRepository;
-import com.whitetail.learningspring.repository.UserRepository;
 import com.whitetail.learningspring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
