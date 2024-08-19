@@ -12,5 +12,15 @@ spring:
         suffix: .ftl
         expose-request-attributes: true
         expose-session-attributes: true
+        settings:
+            number_format: ""
+    mail:
+        host: smtp.gmail.com
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
+        port: 465
+        protocol: smtps
 upload:
     path: /Users/nikita/Desktop/CURRENT_TASKS/JavaProjects/learning-spring/src/main/uploads/
+app:
+    activation-url: http://localhost:8080/activate/
