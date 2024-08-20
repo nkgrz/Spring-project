@@ -5,8 +5,12 @@ spring:
         url: jdbc:postgresql://localhost:5432/postgres
         username: postgres
         password: pg4sfEd3
+    liquibase:
+        change-log: classpath:/db/changelog/db.changelog-master.yml
     jpa:
-        generate-ddl: true
+        generate-ddl: false
+        hibernate:
+            ddl-auto: validate
     freemarker:
         template-loader-path: classpath:/templates/
         suffix: .ftl
