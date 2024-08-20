@@ -57,8 +57,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean addUser(User user) {
-        User userFromDb = userRepository.findByUsername(user.getUsername());
-        if (userFromDb != null) {
+        if (userRepository.findByUsername(user.getUsername()) != null) {
             return false;
         }
         user.setActive(true);
@@ -66,6 +65,9 @@ public class UserService implements UserDetailsService {
         user.setActivationCode(UUID.randomUUID().toString());
 
         if (!StringUtil.isNullOrEmpty(user.getEmail())) {
+            if (userRepository.findByEmail(user.getEmail()) != null) {
+                return false;
+            }
             String message = String.format("Hello, %s!\n"
                     + "Welcome to WhiteTail Shop. "
                     + "Please follow the link to activate your account: %s%s",
