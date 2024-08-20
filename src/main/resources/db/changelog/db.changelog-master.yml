@@ -1,0 +1,135 @@
+databaseChangeLog:
+    -   changeSet:
+            id: create-users-table
+            author: nkgrz
+            changes:
+                -   createTable:
+                        tableName: usr
+                        columns:
+                            -   column:
+                                    name: id
+                                    type: bigint
+                                    autoIncrement: true
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                            -   column:
+                                    name: username
+                                    type: varchar(255)
+                                    constraints:
+                                        nullable: false
+                                        unique: true
+                            -   column:
+                                    name: email
+                                    type: varchar(255)
+                                    constraints:
+                                        unique: true
+                            -   column:
+                                    name: password
+                                    type: varchar(255)
+                                    constraints:
+                                        nullable: false
+                            -   column:
+                                    name: active
+                                    type: boolean
+                                    constraints:
+                                        nullable: false
+                            -   column:
+                                    name: activation_code
+                                    type: varchar(255)
+    -   changeSet:
+            id: create-message-table
+            author: nkgrz
+            changes:
+                -   createTable:
+                        tableName: message
+                        columns:
+                            -   column:
+                                    name: id
+                                    type: bigint
+                                    autoIncrement: true
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                            -   column:
+                                    name: user_id
+                                    type: bigint
+                                    constraints:
+                                        foreignKeyName: message_user_fk
+                                        references: usr(id)
+                            -   column:
+                                    name: tag
+                                    type: varchar(255)
+                            -   column:
+                                    name: text
+                                    type: varchar(2048)
+                                    constraints:
+                                        nullable: false
+                            -   column:
+                                    name: filename
+                                    type: varchar(255)
+
+    -   changeSet:
+            id: create-user-role-table
+            author: nkgrz
+            changes:
+                -   createTable:
+                        tableName: user_role
+                        columns:
+                            -   column:
+                                    name: user_id
+                                    type: bigint
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                                        foreignKeyName: user_role_user_fk
+                                        references: usr(id)
+                            -   column:
+                                    name: roles
+                                    type: varchar(255)
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                                        checkConstraint: "roles IN ('USER', 'ADMIN')"
+
+    -   changeSet:
+            id: add-admin
+            author: nkgrz
+            changes:
+                -   insert:
+                        tableName: usr
+                        columns:
+                            -   column:
+                                    name: id
+                                    valueNumeric: "1"
+                            -   column:
+                                    name: username
+                                    value: admin
+                            -   column:
+                                    name: password
+                                    value: "123"
+                            -   column:
+                                    name: active
+                                    valueBoolean: "true"
+
+                -   insert:
+                        tableName: user_role
+                        columns:
+                            -   column:
+                                    name: user_id
+                                    valueNumeric: "1"
+                            -   column:
+                                    name: roles
+                                    value: USER
+                -   insert:
+                        tableName: user_role
+                        columns:
+                            -   column:
+                                    name: user_id
+                                    valueNumeric: "1"
+                            -   column:
+                                    name: roles
+                                    value: ADMIN
+                -   sql:
+                        sql: |
+                            SELECT setval('usr_id_seq', (SELECT MAX(id) FROM usr));
