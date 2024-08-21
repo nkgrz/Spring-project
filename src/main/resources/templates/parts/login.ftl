@@ -1,11 +1,6 @@
+<#import "infoMessage.ftl" as m>
 <#macro login path>
-    <#if message?has_content>
-        <div class="d-flex justify-content-center">
-            <div class="alert alert-danger fw-lighter text-center" style="max-width: 500px;">
-                ${message}
-            </div>
-        </div>
-    </#if>
+<@m.msg></@m.msg>
     <div class="container mt-2" style="max-width: 400px;">
         <div class="card shadow-sm">
             <div class="card-body">
