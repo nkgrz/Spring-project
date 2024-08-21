@@ -11,20 +11,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
 
-    @Value("${app.activation-url}")
-    private String activationUrl;
-
     private final UserRepository userRepository;
     private final MessageService messageService;
     private final MailSender mailSender;
+    @Value("${app.activation-url}")
+    private String activationUrl;
 
     @Autowired
     public UserService(UserRepository userRepository,
@@ -52,32 +51,31 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    public void save(User user) {
-        userRepository.save(user);
-    }
-
     public boolean addUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        if (userRepository.findByUsername(user.getUsername()) != null
+                || (!StringUtil.isNullOrEmpty(user.getEmail()) &&
+                userRepository.findByEmail(user.getEmail()) != null)) {
             return false;
         }
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
 
-        if (!StringUtil.isNullOrEmpty(user.getEmail())) {
-            if (userRepository.findByEmail(user.getEmail()) != null) {
-                return false;
-            }
-            String message = String.format("Hello, %s!\n"
-                    + "Welcome to WhiteTail Shop. "
-                    + "Please follow the link to activate your account: %s%s",
-                    user.getUsername(), activationUrl, user.getActivationCode());
-            mailSender.send(user.getEmail(), "Activation Code", message);
-        }
+        sendMessage(user);
 
         userRepository.save(user);
 
         return true;
+    }
+
+    private void sendMessage(User user) {
+        if (!StringUtil.isNullOrEmpty(user.getEmail())) {
+            String message = String.format("Hello, %s!\n"
+                            + "Welcome to WhiteTail Shop. "
+                            + "Please follow the link to activate your account: %s%s",
+                    user.getUsername(), activationUrl, user.getActivationCode());
+            mailSender.send(user.getEmail(), "Activation Code", message);
+        }
     }
 
     public boolean confirmEmail(String code) {
@@ -91,4 +89,64 @@ public class UserService implements UserDetailsService {
 
         return true;
     }
+
+    public void saveUser(User user, String username, Map<String, String> form) {
+        user.setUsername(username);
+        Set<String> roles = Arrays.stream(Role.values())
+                .map(Role::name)
+                .collect(Collectors.toSet());
+
+        user.getRoles().clear();
+        for (String key : form.keySet()) {
+            if (roles.contains(key)) {
+                user.getRoles().add(Role.valueOf(key));
+            }
+        }
+
+        userRepository.save(user);
+    }
+
+    public void updateProfile(User user, String username, String email) {
+        boolean isEmailChanged = !Objects.equals(user.getEmail(), email);
+
+        if (isEmailChanged && !StringUtil.isNullOrEmpty(email)) {
+            user.setEmail(email);
+            user.setActivationCode(UUID.randomUUID().toString());
+            sendMessage(user);
+        }
+
+        if (!StringUtil.isNullOrEmpty(username) &&
+                !user.getUsername().equals(username) &&
+                userRepository.findByUsername(username) == null) {
+            user.setUsername(username);
+        }
+
+        userRepository.save(user);
+    }
+
+    public Model updatePassword(User user, String oldPassword, String newPassword, Model model) {
+        try {
+            validatePassword(user, oldPassword, newPassword);
+            user.setPassword(newPassword);
+            userRepository.save(user);
+            model.addAttribute("message", "Пароль успешно изменен!");
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+        }
+
+        return model;
+    }
+
+    private void validatePassword(User user, String oldPassword, String newPassword) {
+        if (!user.getPassword().equals(oldPassword)) {
+            throw new IllegalArgumentException("Текущий пароль не верен");
+        }
+        if (StringUtil.isNullOrEmpty(newPassword)) {
+            throw new IllegalArgumentException("Пароль не может быть пустым");
+        }
+        if (user.getPassword().equals(newPassword)) {
+            throw new IllegalArgumentException("Новый пароль должен отличаться от старого!");
+        }
+    }
+
 }
