@@ -29,7 +29,7 @@ public class RegistrationController {
     public String registration(User user, Model model, RedirectAttributes redirectAttributes) {
 
         if (!userService.addUser(user)) {
-            model.addAttribute("message", "User exists!");
+            model.addAttribute("errorMessage", "User exists!");
             return "registration";
         }
 
