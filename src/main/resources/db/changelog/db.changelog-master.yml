@@ -22,8 +22,6 @@ databaseChangeLog:
                             -   column:
                                     name: email
                                     type: varchar(255)
-                                    constraints:
-                                        unique: true
                             -   column:
                                     name: password
                                     type: varchar(255)
