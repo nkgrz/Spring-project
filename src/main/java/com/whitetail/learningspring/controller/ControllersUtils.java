@@ -1,5 +1,7 @@
 package com.whitetail.learningspring.controller;
 
+import com.whitetail.learningspring.validation.ValidationException;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -14,5 +16,20 @@ public class ControllersUtils {
                 FieldError::getDefaultMessage);
         return bindingResult.getFieldErrors().stream().collect(
                 map);
+    }
+
+    public static void handleErrors(ValidationException e, Model model) {
+        if (e.getMessage().contains("usernameError")) {
+            model.addAttribute("usernameError", "Username is already taken");
+        }
+        if (e.getMessage().contains("emailError")) {
+            model.addAttribute("emailError", "Email is already taken");
+        }
+        if (e.getMessage().contains("passwordConfirmationError")) {
+            model.addAttribute("passwordConfirmationError", "Passwords are different!");
+        }
+        if (e.getMessage().contains("currentPasswordError")) {
+            model.addAttribute("currentPasswordError", "The current password is incorrect");
+        }
     }
 }
