@@ -7,16 +7,41 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <form method="post" action="/user/change-password">
+
                     <div class="mb-3">
-                        <label for="oldPassword" class="form-label">Current Password</label>
-                        <input type="password" class="form-control" id="oldPassword" name="oldPassword"
-                               placeholder="Enter your current password" required/>
+                        <label for="currentPassword" class="form-label ">Current password</label>
+                        <input type="password" name="currentPassword" id="currentPassword"
+                               class="form-control ${(currentPasswordError??)?string('is-invalid','')}"
+                               placeholder="Current password"/>
+                        <#if currentPasswordError??>
+                            <div class="invalid-feedback">
+                                ${currentPasswordError}
+                            </div>
+                        </#if>
                     </div>
 
                     <div class="mb-3">
-                        <label for="newPassword" class="form-label">New Password</label>
-                        <input type="password" class="form-control" id="newPassword" name="newPassword"
-                               placeholder="Enter your new password" required/>
+                        <label for="password" class="form-label ">New password</label>
+                        <input type="password" name="password" id="password"
+                               class="form-control ${(passwordError??)?string('is-invalid','')}"
+                               placeholder="New password"/>
+                        <#if passwordError??>
+                            <div class="invalid-feedback">
+                                ${passwordError}
+                            </div>
+                        </#if>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="passwordConfirmation" class="form-label ">Retype password</label>
+                        <input type="password" name="passwordConfirmation" id="passwordConfirmation"
+                               class="form-control ${(passwordConfirmationError??)?string('is-invalid','')}"
+                               placeholder="Retype password"/>
+                        <#if passwordConfirmationError??>
+                            <div class="invalid-feedback">
+                                ${passwordConfirmationError}
+                            </div>
+                        </#if>
                     </div>
 
                     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
