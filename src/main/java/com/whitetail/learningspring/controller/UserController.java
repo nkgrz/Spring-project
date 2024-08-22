@@ -5,6 +5,7 @@ import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.UserService;
 import com.whitetail.learningspring.validation.PasswordValidationGroup;
 import com.whitetail.learningspring.validation.UsernameEmailValidationGroup;
+import com.whitetail.learningspring.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -104,7 +105,7 @@ public class UserController {
 
     @PostMapping("change-password")
     public String updatePassword(@AuthenticationPrincipal User user,
-                                 @RequestParam String passwordConfirm,
+                                 @RequestParam String currentPassword,
                                  @Validated(PasswordValidationGroup.class) User userUpdate,
                                  BindingResult bindingResult,
                                  Model model,
@@ -115,17 +116,12 @@ public class UserController {
             model.mergeAttributes(errors);
         } else {
             try {
-                userService.updatePassword(user, userUpdate.getPassword2(), userUpdate.getPassword(), passwordConfirm);
+                userService.updatePassword(user, currentPassword, userUpdate.getPassword(), userUpdate.getPasswordConfirmation());
                 redirectAttributes.addFlashAttribute("message",
                         "The password has been successfully changed!");
                 return "redirect:/user/profile";
-            } catch (UsernameNotFoundException e) {
-                if (e.getMessage().contains("passwordConfirm")) {
-                    model.addAttribute("passwordConfirm", "Password are different!");
-                }
-                if (e.getMessage().contains("password2Error")) {
-                    model.addAttribute("password2Error", "The current password is incorrect");
-                }
+            } catch (ValidationException e) {
+                ControllersUtils.handleErrors(e, model);
             }
         }
 
