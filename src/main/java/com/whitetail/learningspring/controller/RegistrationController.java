@@ -3,6 +3,7 @@ package com.whitetail.learningspring.controller;
 import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.UserService;
 import com.whitetail.learningspring.validation.AllValidationGroups;
+import com.whitetail.learningspring.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,16 +45,8 @@ public class RegistrationController {
         }
         try {
             userService.addUser(user);
-        } catch (Exception e) {
-            if (e.getMessage().contains("usernameError")) {
-                model.addAttribute("usernameError", "Username is already taken");
-            }
-            if (e.getMessage().contains("emailError")) {
-                model.addAttribute("emailError", "Email is already taken");
-            }
-            if (e.getMessage().contains("passwordError")) {
-                model.addAttribute("password2Error", "Password are different!");
-            }
+        } catch (ValidationException e) {
+            ControllersUtils.handleErrors(e, model);
             return "registration";
         }
 
