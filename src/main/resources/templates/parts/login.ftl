@@ -1,6 +1,6 @@
 <#import "infoMessage.ftl" as m>
 <#macro login path>
-<@m.msg></@m.msg>
+    <@m.msg></@m.msg>
     <div class="container mt-2" style="max-width: 400px;">
         <div class="card shadow-sm">
             <div class="card-body">
@@ -8,22 +8,57 @@
                 <form action="${path}" method="post">
                     <div class="mb-3">
                         <label for="username" class="form-label">User Name</label>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="User name"/>
-<#--                               required/>-->
+                        <input type="text" id="username" name="username"
+                               class="form-control ${(usernameError??)?string('is-invalid','')}"
+                               value="<#if user??>${user.username!''}</#if>"
+                               placeholder="User name"/>
+                        <#if usernameError??>
+                            <div class="invalid-feedback">
+                                ${usernameError}
+                            </div>
+                        </#if>
                     </div>
 
                     <#if path == "/registration">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="email@company.com"/>
+                            <input type="email" id="email" name="email"
+                                   class="form-control ${(emailError??)?string('is-invalid','')}"
+                                   value="<#if user??>${user.email!''}</#if>"
+                                   placeholder="email@company.com"/>
+                            <#if emailError??>
+                                <div class="invalid-feedback">
+                                    ${emailError}
+                                </div>
+                            </#if>
                         </div>
                     </#if>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Password"/>
-<#--                               required/>-->
+                        <label for="password" class="form-label ">Password</label>
+                        <input type="password" name="password" id="password"
+                               class="form-control ${(passwordError??)?string('is-invalid','')}"
+                               placeholder="Password"/>
+                        <#if passwordError??>
+                            <div class="invalid-feedback">
+                                ${passwordError}
+                            </div>
+                        </#if>
                     </div>
+
+                    <#if path == '/registration'>
+                        <div class="mb-3">
+                            <label for="passwordConfirmation" class="form-label ">Retype password</label>
+                            <input type="password" name="passwordConfirmation" id="passwordConfirmation"
+                                   class="form-control ${(passwordConfirmationError??)?string('is-invalid','')}"
+                                   placeholder="Retype password"/>
+                            <#if passwordConfirmationError??>
+                                <div class="invalid-feedback">
+                                    ${passwordConfirmationError}
+                                </div>
+                            </#if>
+                        </div>
+                    </#if>
 
                     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
