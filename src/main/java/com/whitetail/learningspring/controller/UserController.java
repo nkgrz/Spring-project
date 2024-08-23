@@ -9,7 +9,6 @@ import com.whitetail.learningspring.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -82,13 +81,8 @@ public class UserController {
             try {
                 userService.updateProfile(user, userUpdate.getUsername(), userUpdate.getEmail());
                 model.addAttribute("message", "Данные профиля обновлены");
-            } catch (UsernameNotFoundException e) {
-                if (e.getMessage().contains("usernameError")) {
-                    model.addAttribute("usernameError", "Username already taken");
-                }
-                if (e.getMessage().contains("emailError")) {
-                    model.addAttribute("emailError", "Email already taken");
-                }
+            } catch (ValidationException e) {
+                ControllersUtils.handleErrors(e, model);
             }
         }
 
@@ -106,6 +100,7 @@ public class UserController {
     @PostMapping("change-password")
     public String updatePassword(@AuthenticationPrincipal User user,
                                  @RequestParam String currentPassword,
+                                 @RequestParam("passwordConfirmation") String passwordConfirmation,
                                  @Validated(PasswordValidationGroup.class) User userUpdate,
                                  BindingResult bindingResult,
                                  Model model,
@@ -114,16 +109,16 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllersUtils.getErrorsMap(bindingResult);
             model.mergeAttributes(errors);
-        } else {
-            try {
-                userService.updatePassword(user, currentPassword, userUpdate.getPassword(), userUpdate.getPasswordConfirmation());
-                redirectAttributes.addFlashAttribute("message",
-                        "The password has been successfully changed!");
-                return "redirect:/user/profile";
-            } catch (ValidationException e) {
-                ControllersUtils.handleErrors(e, model);
-            }
         }
+        try {
+            userService.updatePassword(user, currentPassword, userUpdate.getPassword(), passwordConfirmation);
+            redirectAttributes.addFlashAttribute("message",
+                    "The password has been successfully changed!");
+            return "redirect:/user/profile";
+        } catch (ValidationException e) {
+            ControllersUtils.handleErrors(e, model);
+        }
+
 
         return "changePassword";
     }
