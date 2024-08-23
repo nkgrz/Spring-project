@@ -2,7 +2,7 @@
 <#include "security.ftl">
 <nav class="navbar navbar-expand-lg bg-body-tertiary px-5">
     <div class="container-fluid d-flex justify-content-between">
-        <a class="navbar-brand" href="/">Sweater</a>
+        <a class="navbar-brand" href="/">Messenger</a>
         <div class="d-flex justify-content-center mx-auto">
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item">
