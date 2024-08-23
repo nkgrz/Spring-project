@@ -5,11 +5,23 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class ControllersUtils {
+
+    private static final Map<String, String> ERROR_MAP;
+
+    static {
+        ERROR_MAP = new HashMap<>();
+        ERROR_MAP.put("usernameError", "Username is already taken");
+        ERROR_MAP.put("emailError", "Email is already taken");
+        ERROR_MAP.put("passwordConfirmationError", "Passwords are different!");
+        ERROR_MAP.put("currentPasswordError", "The current password is incorrect");
+    }
+
     static Map<String, String> getErrorsMap(BindingResult bindingResult) {
         Collector<FieldError, ?, Map<String, String>> map = Collectors.toMap(
                 fieldError -> fieldError.getField() + "Error",
@@ -19,17 +31,12 @@ public class ControllersUtils {
     }
 
     public static void handleErrors(ValidationException e, Model model) {
-        if (e.getMessage().contains("usernameError")) {
-            model.addAttribute("usernameError", "Username is already taken");
-        }
-        if (e.getMessage().contains("emailError")) {
-            model.addAttribute("emailError", "Email is already taken");
-        }
-        if (e.getMessage().contains("passwordConfirmationError")) {
-            model.addAttribute("passwordConfirmationError", "Passwords are different!");
-        }
-        if (e.getMessage().contains("currentPasswordError")) {
-            model.addAttribute("currentPasswordError", "The current password is incorrect");
+        String[] errorMessages = e.getMessage().split(" ");
+        for (String errorMessage : errorMessages) {
+            if (ERROR_MAP.containsKey(errorMessage)) {
+                model.addAttribute(errorMessage, ERROR_MAP.get(errorMessage));
+            }
         }
     }
+
 }
