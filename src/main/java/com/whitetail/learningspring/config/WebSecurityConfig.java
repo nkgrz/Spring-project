@@ -40,6 +40,7 @@ public class WebSecurityConfig {
                         .defaultSuccessUrl("/main", true)
                         .permitAll()
                 )
+                .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret"))
                 .logout(LogoutConfigurer::permitAll)
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())

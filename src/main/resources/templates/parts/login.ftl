@@ -62,13 +62,19 @@
 
                     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
-                    <div class="d-flex justify-content-between mt-4">
+                    <div class="d-flex justify-content-between align-items-center mt-4">
                         <#if path == "/login">
-                            <input type="submit" value="Sign In" class="btn btn-primary"/>
-                            <a href="/registration" class="btn btn-secondary">Registration</a>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember-me">
+                                <label class="form-check-label" for="rememberMe">Remember Me</label>
+                            </div>
+                            <div>
+                                <input type="submit" value="Sign In" class="btn btn-primary"/>
+                                <a href="/registration" class="btn btn-secondary ms-2">Registration</a>
+                            </div>
                         <#elseif path == "/registration">
                             <input type="submit" value="Register" class="btn btn-primary"/>
-                            <a href="/login" class="btn btn-secondary">Login page</a>
+                            <a href="/login" class="btn btn-secondary ms-2">Login page</a>
                         <#else>
                             <input type="submit" value="Submit" class="btn btn-primary"/>
                         </#if>
