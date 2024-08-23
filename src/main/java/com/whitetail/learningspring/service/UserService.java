@@ -59,18 +59,8 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    public void addUser(User user) {
-        List<String> errors = new ArrayList<>();
-
-        if (!user.getPassword().equals(user.getPasswordConfirmation())) {
-            errors.add("passwordConfirmationError");
-        }
-        if (userRepository.findByUsername(user.getUsername()) != null) {
-            errors.add("usernameError");
-        }
-        if (userRepository.findByEmail(user.getEmail()) != null) {
-            errors.add("emailError");
-        }
+    public void addUser(User user, String passwordConfirmation) {
+        List<String> errors = validateNewUser(user, passwordConfirmation);
         if (!errors.isEmpty()) {
             throw new ValidationException(String.join(" ", errors));
         }
@@ -85,6 +75,31 @@ public class UserService implements UserDetailsService {
 //        sendMessage(user);
 
         userRepository.save(user);
+    }
+
+    private List<String> validateNewUser(User user, String passwordConfirmation) {
+        List<String> errors = new ArrayList<>();
+
+        if (!user.getPassword().equals(passwordConfirmation)) {
+            errors.add("passwordConfirmationError");
+        }
+        if (isUsernameTaken(user.getUsername())) {
+            errors.add("usernameError");
+        }
+        if (isEmailTaken(user.getEmail())) {
+            errors.add("emailError");
+        }
+
+        return errors;
+    }
+
+
+    private boolean isUsernameTaken(String username) {
+        return userRepository.findByUsername(username) != null;
+    }
+
+    private boolean isEmailTaken(String email) {
+        return userRepository.findByEmail(email) != null;
     }
 
     private void sendMessage(User user) {
@@ -126,46 +141,60 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfile(User user, String username, String email) {
+        List<String> errors = validateProfileUpdate(user, username, email);
 
-        List<String> errors = new ArrayList<>();
-        User userByUsername = userRepository.findByUsername(username);
-        User userByEmail = userRepository.findByEmail(email);
-
-        if (userByUsername != null && !user.getUsername().equals(username)) {
-            errors.add("usernameError");
-        }
-        if (userByEmail != null && !user.getEmail().equals(email)) {
-            errors.add("emailError");
-        }
         if (!errors.isEmpty()) {
             throw new ValidationException(String.join(" ", errors));
         }
 
-        boolean isEmailChanged = !Objects.equals(user.getEmail(), email);
-
-        if (isEmailChanged && !StringUtil.isNullOrEmpty(email)) {
-            user.setEmail(email);
-            user.setActivationCode(UUID.randomUUID().toString());
-//            Временно отключена отправка сообщений
-//            sendMessage(user);
-        }
-
-        if (!StringUtil.isNullOrEmpty(username) &&
-                !user.getUsername().equals(username)) {
-            user.setUsername(username);
-        }
+        updateEmailIfChanged(user, email);
+        updateUsernameIfChanged(user, username);
 
         userRepository.save(user);
     }
 
-    public void updatePassword(User user, String currentPassword, String newPassword, String passwordConfirmation) {
+    private List<String> validateProfileUpdate(User user, String username, String email) {
         List<String> errors = new ArrayList<>();
-        if (!passwordConfirmation.equals(newPassword)) {
-            errors.add("passwordConfirmationError");
+
+        if (isUsernameTaken(user, username)) {
+            errors.add("usernameError");
         }
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            errors.add("currentPasswordError");
+        if (isEmailTaken(user, email)) {
+            errors.add("emailError");
         }
+
+        return errors;
+    }
+
+    private boolean isUsernameTaken(User user, String username) {
+        User userByUsername = userRepository.findByUsername(username);
+        return userByUsername != null && !user.getUsername().equals(username);
+    }
+
+    private boolean isEmailTaken(User user, String email) {
+        User userByEmail = userRepository.findByEmail(email);
+        return userByEmail != null && !user.getEmail().equals(email);
+    }
+
+    private void updateEmailIfChanged(User user, String email) {
+        if (!StringUtil.isNullOrEmpty(email) && !Objects.equals(user.getEmail(), email)) {
+            user.setEmail(email);
+            user.setActivationCode(UUID.randomUUID().toString());
+            // Временно отключена отправка сообщений
+            // sendMessage(user);
+        }
+    }
+
+    private void updateUsernameIfChanged(User user, String username) {
+        if (!StringUtil.isNullOrEmpty(username) && !user.getUsername().equals(username)) {
+            user.setUsername(username);
+        }
+    }
+
+
+    public void updatePassword(User user, String currentPassword, String newPassword, String passwordConfirmation) {
+        List<String> errors = validatePasswordChange(user.getPassword(), currentPassword, newPassword, passwordConfirmation);
+
         if (!errors.isEmpty()) {
             throw new ValidationException(String.join(" ", errors));
         }
@@ -173,5 +202,20 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    private List<String> validatePasswordChange(String userCurrentPassword, String currentPassword,
+                                                String newPassword, String passwordConfirmation) {
+        List<String> errors = new ArrayList<>();
+
+        if (!passwordConfirmation.equals(newPassword)) {
+            errors.add("passwordConfirmationError");
+        }
+        if (!passwordEncoder.matches(currentPassword, userCurrentPassword)) {
+            errors.add("currentPasswordError");
+        }
+
+        return errors;
+    }
+
 
 }
