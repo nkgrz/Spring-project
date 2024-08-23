@@ -36,6 +36,7 @@ public class RegistrationController {
     public String registration(@Validated(AllValidationGroups.class) User user,
                                BindingResult bindingResult,
                                Model model,
+                               @RequestParam("passwordConfirmation") String passwordConfirmation,
                                RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
@@ -44,7 +45,7 @@ public class RegistrationController {
             return "registration";
         }
         try {
-            userService.addUser(user);
+            userService.addUser(user, passwordConfirmation);
         } catch (ValidationException e) {
             ControllersUtils.handleErrors(e, model);
             return "registration";
