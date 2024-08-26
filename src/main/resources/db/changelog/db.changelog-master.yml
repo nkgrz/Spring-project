@@ -131,3 +131,14 @@ databaseChangeLog:
                 -   sql:
                         sql: |
                             SELECT setval('usr_id_seq', (SELECT MAX(id) FROM usr));
+    -   changeSet:
+            id: changing-admin-password-to-BCrypt
+            author: nkgrz
+            changes:
+                -   update:
+                        tableName: usr
+                        columns:
+                            -   column:
+                                    name: password
+                                    value: "$2a$08$.73jpRReXRzMmd.CcqLFEuPvfPnUrbnPoGA4pYz3T2qVDCXG3j3Gi"
+                        where: "username = 'admin'"
