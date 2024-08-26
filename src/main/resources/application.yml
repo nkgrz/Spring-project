@@ -3,8 +3,8 @@ spring:
         name: learning-spring
     datasource:
         url: jdbc:postgresql://localhost:5432/postgres
-        username: postgres
-        password: pg4sfEd3
+        username: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
     liquibase:
         change-log: classpath:/db/changelog/db.changelog-master.yml
     jpa:
@@ -25,6 +25,6 @@ spring:
         port: 465
         protocol: smtps
 upload:
-    path: /Users/nikita/Desktop/CURRENT_TASKS/JavaProjects/learning-spring/src/main/uploads/
+    path: /home/parallels/app/uploads/
 app:
-    activation-url: http://localhost:8080/activate/
+    activation-url: http://10.211.55.10/activate/
