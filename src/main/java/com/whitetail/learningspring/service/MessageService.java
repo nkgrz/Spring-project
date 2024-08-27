@@ -66,14 +66,18 @@ public class MessageService {
         // Удаляем все сообщения и связанные с ними файлы
         messages.forEach(message -> {
             String filename = message.getFilename();
-            if (filename != null && !filename.isEmpty()) {
-                Path filePath = Paths.get(uploadPath, filename);
-                try {
-                    Files.deleteIfExists(filePath); // Удаляем файл, если он существует
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not delete file: " + filename, e);
-                }
-            }
+            deleteFile(filename);
         });
+    }
+
+    public void deleteFile(String filename) {
+        if (filename != null && !filename.isEmpty()) {
+            Path filePath = Paths.get(uploadPath, filename);
+            try {
+                Files.deleteIfExists(filePath); // Удаляем файл, если он существует
+            } catch (IOException e) {
+                throw new RuntimeException("Could not delete file: " + filename, e);
+            }
+        }
     }
 }
