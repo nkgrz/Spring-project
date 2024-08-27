@@ -1,5 +1,6 @@
 package com.whitetail.learningspring.controller;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.MessageService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,5 +78,50 @@ public class MainController {
     public String delete() {
         messageService.deleteMessages();
         return "redirect:/main";
+    }
+
+    @GetMapping("user-messages/{user}")
+    public String userMessages(@AuthenticationPrincipal User currentUser,
+                               @PathVariable User user,
+                               @RequestParam(required = false) Message message,
+                               Model model) {
+        model.addAttribute("messages", user.getMessages());
+        model.addAttribute("message", message);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("isCurrentUser", user.equals(currentUser));
+        return "userMessages";
+    }
+
+    @PostMapping("user-messages/{user}")
+    public String updateMessage(@AuthenticationPrincipal User currentUser,
+                                @PathVariable Long user,
+                                @RequestParam("id") Message message,
+                                @RequestParam("text") String text,
+                                @RequestParam("tag") String tag,
+                                @RequestParam("file") MultipartFile file
+    ) throws IOException {
+        if (message.getAuthor().equals(currentUser)) {
+            boolean isChanged = false;
+            if (!StringUtil.isNullOrEmpty(text)) {
+                message.setText(text);
+                isChanged = true;
+            }
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                message.setTag(tag);
+                isChanged = true;
+            }
+            if (file != null && !file.isEmpty()) {
+                messageService.deleteFile(message.getFilename());
+                String fileName = messageService.saveImage(file);
+                message.setFilename(fileName);
+                isChanged = true;
+            }
+
+            if (isChanged) {
+                messageService.save(message);
+            }
+        }
+
+        return "redirect:/user-messages/" + user;
     }
 }
