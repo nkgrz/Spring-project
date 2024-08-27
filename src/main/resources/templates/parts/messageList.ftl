@@ -1,9 +1,8 @@
 <#if messages?has_content>
     <div class="container mt-4 d-flex justify-content-center">
-        <!-- Добавляем рамку и фиксируем высоту и ширину области с сообщениями -->
-        <div class="row"
+        <div id="messagesContainer" class="row"
              style="max-height: 900px; overflow-y: auto; width: 100%; max-width: 700px; border: 2px solid #ccc; padding: 10px; border-radius: 8px;">
-            <#list messages?reverse as msg>
+            <#list messages as msg>
                 <div class="col-12 mb-4"
                      style="display: flex;
                              justify-content: <#if msg.author.id == currentUserId>flex-end<#else>flex-start</#if>;">
@@ -19,18 +18,28 @@
                                          style="max-width: 100%; height: auto;">
                                 </div>
                             </#if>
-                            <div class="row">
-                                <span class="badge bg-secondary">${msg.tag}</span>
-                                <#if msg.author.id == currentUserId>
-                                    <a class="btn btn-light" href="user-messages/${msg.author.id}?message=${msg.id}">Edit</a>
-                                </#if>
-                            </div>
+                            <a class="badge bg-secondary" style="text-decoration: none;"
+                               href="/main?tag=${msg.tag}">${msg.tag}</a>
+                            <#if msg.author.id == currentUserId>
+                                <a class="btn btn-light btn-sm"
+                                   href="/user-messages/${msg.author.id}?message=${msg.id}">Edit</a>
+                            </#if>
                         </div>
                     </div>
                 </div>
             </#list>
         </div>
     </div>
+
+    <!-- Скрипт для прокрутки вниз после полной загрузки контента -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const messagesContainer = document.getElementById('messagesContainer');
+            setTimeout(function () {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
+        });
+    </script>
 <#else>
     <div class="container mt-4 text-center">
         <div class="alert alert-info" role="alert">
