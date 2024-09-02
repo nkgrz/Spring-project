@@ -27,7 +27,7 @@
             </ul>
         </div>
         <div class="d-flex">
-            <div class="navbar-text me-3">${name}</div>
+            <div class="navbar-text me-3"><#if user??>${name}<#else>Please, login</#if></div>
             <#if name != "unknown">
                 <@l.logout_btn/>
             <#else>
