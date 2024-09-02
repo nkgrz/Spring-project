@@ -6,6 +6,7 @@ import com.whitetail.learningspring.service.UserService;
 import com.whitetail.learningspring.validation.PasswordValidationGroup;
 import com.whitetail.learningspring.validation.UsernameEmailValidationGroup;
 import com.whitetail.learningspring.validation.ValidationException;
+import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -123,4 +124,29 @@ public class UserController {
         return "changePassword";
     }
 
+    @GetMapping("subscribe/{user}")
+    public String subscribe(@PathVariable User user,
+                            @AuthenticationPrincipal User currentUser) {
+        userService.subscribe(currentUser, user);
+        return "redirect:/user-messages/" + user.getId();
+    }
+
+    @GetMapping("unsubscribe/{user}")
+    public String unsubscribe(@PathVariable User user,
+                            @AuthenticationPrincipal User currentUser) {
+        userService.unsubscribe(currentUser, user);
+        return "redirect:/user-messages/" + user.getId();
+    }
+
+    @GetMapping("{type}/{user}/list")
+    public String list(@PathVariable String type, @PathVariable User user, Model model) {
+        model.addAttribute("user", user);
+        model.addAttribute("type", type);
+        if("subscriptions".equals(type)) {
+            model.addAttribute("users", user.getSubscriptions());
+        } else {
+            model.addAttribute("users", user.getSubscribers());
+        }
+        return "subscriptions";
+    }
 }
