@@ -142,3 +142,26 @@ databaseChangeLog:
                                     name: password
                                     value: "$2a$08$.73jpRReXRzMmd.CcqLFEuPvfPnUrbnPoGA4pYz3T2qVDCXG3j3Gi"
                         where: "username = 'admin'"
+    -   changeSet:
+            id: add-user-subscriptions-table
+            author: nkgrz
+            changes:
+                -   createTable:
+                        tableName: user_subscriptions
+                        columns:
+                            -   column:
+                                    name: subscriber_id
+                                    type: bigint
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                                        foreignKeyName: subscriber_id_user_fk
+                                        references: usr(id)
+                            -   column:
+                                    name: channel_id
+                                    type: bigint
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                                        foreignKeyName: channel_id_user_fk
+                                        references: usr(id)
