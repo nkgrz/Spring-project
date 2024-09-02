@@ -4,7 +4,10 @@ import ch.qos.logback.core.util.StringUtil;
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.MessageService;
+import com.whitetail.learningspring.service.UserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -23,11 +26,14 @@ import java.util.Map;
 @Controller
 public class MainController {
 
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private final MessageService messageService;
+    private final UserService userService;
 
     @Autowired
-    public MainController(MessageService messageService) {
+    public MainController(MessageService messageService, UserService userService) {
         this.messageService = messageService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -85,9 +91,12 @@ public class MainController {
                                @PathVariable User user,
                                @RequestParam(required = false) Message message,
                                Model model) {
+        model.addAttribute("requestedUser", user);
+        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
+        model.addAttribute("subscribersCount", user.getSubscribers().size());
+        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
         model.addAttribute("messages", user.getMessages());
         model.addAttribute("message", message);
-        model.addAttribute("username", user.getUsername());
         model.addAttribute("isCurrentUser", user.equals(currentUser));
         return "userMessages";
     }
