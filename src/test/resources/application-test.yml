@@ -1,0 +1,32 @@
+spring:
+    config:
+        import: optional:file:.env
+    application:
+        name: learning-spring
+    datasource:
+        url: jdbc:postgresql://localhost:5432/postgres_test
+        username: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+    liquibase:
+        change-log: classpath:/db/changelog/db.changelog-master.yml
+    jpa:
+        generate-ddl: false
+        hibernate:
+            ddl-auto: validate
+    freemarker:
+        template-loader-path: classpath:/templates/
+        suffix: .ftl
+        expose-request-attributes: true
+        expose-session-attributes: true
+        settings:
+            number_format: ""
+    mail:
+        host: smtp.gmail.com
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
+        port: 465
+        protocol: smtps
+upload:
+    path: /Users/nikita/Desktop/CURRENT_TASKS/JavaProjects/learning-spring/src/main/uploads/
+app:
+    activation-url: http://localhost:8080/activate/
