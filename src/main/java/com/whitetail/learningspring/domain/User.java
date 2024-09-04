@@ -94,4 +94,16 @@ public class User implements UserDetails {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", active=" + active +
+                ", email='" + email + '\'' +
+                ", activationCode='" + activationCode + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
 }
