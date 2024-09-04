@@ -65,7 +65,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <#if path == "/login">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember-me">
+                                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember-me"/>
                                 <label class="form-check-label" for="rememberMe">Remember Me</label>
                             </div>
                             <div>
