@@ -7,7 +7,7 @@
                      style="display: flex;
                              justify-content: <#if msg.author.id == currentUserId>flex-end<#else>flex-start</#if>;">
                     <div class="card shadow-sm" style="max-width: 60%; width: 100%;">
-                        <div class="card-body">
+                        <div class="card-body" data-id="${msg.id}">
                             <a href="/user-messages/${msg.author.id}" style="text-decoration: none; color: inherit;">
                                 <h5 class="card-title">${msg.authorName}</h5>
                             </a>
@@ -15,10 +15,10 @@
                             <#if msg.filename??>
                                 <div class="text-center mb-3">
                                     <img src="/img/${msg.filename}" alt="image" class="img-fluid rounded"
-                                         style="max-width: 100%; height: auto;">
+                                         style="max-width: 100%; height: auto;"/>
                                 </div>
                             </#if>
-                            <a class="badge bg-secondary" style="text-decoration: none;"
+                            <a class="badge bg-secondary" id="msg_tag" style="text-decoration: none;"
                                href="/main?tag=${msg.tag}">${msg.tag}</a>
                             <#if msg.author.id == currentUserId>
                                 <a class="btn btn-light btn-sm"
