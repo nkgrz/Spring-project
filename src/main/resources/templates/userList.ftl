@@ -21,7 +21,7 @@
                         <td>
                             <a href="/user/${user.id?c}" class="btn btn-secondary btn-sm mx-2">Edit</a>
                             <form action="/user/${user.id?c}/delete" method="post" style="display:inline;">
-                                <input type="hidden" name="_csrf" value="${_csrf.token}">
+                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                                 <button type="submit" class="btn btn-danger btn-sm mx-2">Delete</button>
                             </form>
                         </td>
