@@ -4,11 +4,15 @@ import ch.qos.logback.core.util.StringUtil;
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.MessageService;
-import com.whitetail.learningspring.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -28,12 +31,10 @@ public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private final MessageService messageService;
-    private final UserService userService;
 
     @Autowired
-    public MainController(MessageService messageService, UserService userService) {
+    public MainController(MessageService messageService) {
         this.messageService = messageService;
-        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -42,14 +43,18 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String mainMap(@RequestParam(required = false, defaultValue = "") String tag, Model model) {
-        List<Message> messages;
+    public String mainMap(
+            @RequestParam(required = false, defaultValue = "") String tag,
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model) {
+        Page<Message> page;
         if (tag != null && !tag.isEmpty()) {
-            messages = messageService.findByTag(tag);
+            page = messageService.findByTag(tag, pageable);
         } else {
-            messages = messageService.findAll();
+            page = messageService.findAll(pageable);
         }
-        model.addAttribute("messages", messages);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/main");
         model.addAttribute("tag", tag);
         return "main";
     }
@@ -60,7 +65,9 @@ public class MainController {
             @Valid Message message,
             BindingResult bindingResult,
             Model model,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "newTag", required = false) String newTag,
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) throws IOException {
         message.setAuthor(user);
         if (bindingResult.hasErrors()) {
@@ -72,11 +79,16 @@ public class MainController {
                 String fileName = messageService.saveImage(file);
                 message.setFilename(fileName);
             }
+            if (newTag != null) {
+                message.setTag(newTag);
+            }
             messageService.save(message);
             model.addAttribute("message", null);
         }
 
-        model.addAttribute("messages", messageService.findAll());
+        model.addAttribute("url", "/main");
+        Pageable firstPageable = PageRequest.of(0, pageable.getPageSize(), Sort.by("id").descending());
+        model.addAttribute("page", messageService.findAll(firstPageable));
         return "main";
     }
 
@@ -90,12 +102,14 @@ public class MainController {
     public String userMessages(@AuthenticationPrincipal User currentUser,
                                @PathVariable User user,
                                @RequestParam(required = false) Message message,
+                               @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                Model model) {
         model.addAttribute("requestedUser", user);
         model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
         model.addAttribute("subscribersCount", user.getSubscribers().size());
         model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
-        model.addAttribute("messages", user.getMessages());
+        model.addAttribute("page", messageService.findMessagesByUser(user.getId(), pageable));
+        model.addAttribute("url", "/user-messages/" + user.getId());
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", user.equals(currentUser));
         return "userMessages";
@@ -106,7 +120,7 @@ public class MainController {
                                 @PathVariable Long user,
                                 @RequestParam("id") Message message,
                                 @RequestParam("text") String text,
-                                @RequestParam("tag") String tag,
+                                @RequestParam("newTag") String tag,
                                 @RequestParam("file") MultipartFile file
     ) throws IOException {
         if (message.getAuthor().equals(currentUser)) {
