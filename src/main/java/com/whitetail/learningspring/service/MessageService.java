@@ -4,6 +4,8 @@ import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,10 +20,9 @@ import java.util.UUID;
 @Service
 public class MessageService {
 
+    private final MessageRepository messageRepository;
     @Value("${upload.path}")
     private String uploadPath;
-
-    private final MessageRepository messageRepository;
 
     @Autowired
     public MessageService(MessageRepository messageRepository) {
@@ -32,12 +33,16 @@ public class MessageService {
         messageRepository.save(message);
     }
 
-    public List<Message> findAll() {
-        return messageRepository.findAll();
+    public Page<Message> findAll(Pageable pageable) {
+        return messageRepository.findAll(pageable);
     }
 
-    public List<Message> findByTag(String tag) {
-        return messageRepository.findByTag(tag);
+    public Page<Message> findByTag(String tag, Pageable pageable) {
+        return messageRepository.findByTag(tag, pageable);
+    }
+
+    public Page<Message> findMessagesByUser(Long userId, Pageable pageable) {
+        return messageRepository.findByAuthor_Id(userId, pageable);
     }
 
     public String saveImage(MultipartFile file) throws IOException {
@@ -50,6 +55,7 @@ public class MessageService {
         file.transferTo(new File(uploadPath + fileName));
         return fileName;
     }
+
     public void deleteMessages() {
         deleteMessages(null);
     }
