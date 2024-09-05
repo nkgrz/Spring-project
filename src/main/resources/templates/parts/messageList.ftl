@@ -1,8 +1,10 @@
-<#if messages?has_content>
+<#import 'pager.ftl' as p>
+<#if page.content?has_content>
+    <@p.pager url page/>
     <div class="container mt-4 d-flex justify-content-center">
         <div id="messagesContainer" class="row"
              style="max-height: 900px; overflow-y: auto; width: 100%; max-width: 700px; border: 2px solid #ccc; padding: 10px; border-radius: 8px;">
-            <#list messages as msg>
+            <#list page.content?reverse as msg>
                 <div class="col-12 mb-4"
                      style="display: flex;
                              justify-content: <#if msg.author.id == currentUserId>flex-end<#else>flex-start</#if>;">
