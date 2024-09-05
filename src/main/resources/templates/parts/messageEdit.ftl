@@ -22,7 +22,7 @@
                     <label for="messageTag" class="form-label">Tag</label>
                     <input type="text" class="form-control ${(tagError??)?string('is-invalid','')}"
                            value="<#if message??>${message.tag!''}</#if>" id="messageTag"
-                           name="tag" placeholder="Tag"/>
+                           name="newTag" placeholder="Tag"/>
                     <#if tagError??>
                         <div class="invalid-feedback">
                             ${tagError}
@@ -37,7 +37,7 @@
 
                 <button type="submit" class="btn btn-primary mt-3">Save message</button>
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-                <input type="hidden" name="id" value="<#if message?? >${message.id}</#if>"/>
+                <input type="hidden" name="id" value="<#if message?? >${message.id!''}</#if>"/>
             </form>
         </div>
     </div>
