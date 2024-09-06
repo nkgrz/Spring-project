@@ -27,13 +27,13 @@ import java.io.IOException;
 import java.util.Map;
 
 @Controller
-public class MainController {
+public class MessageController {
 
-    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageController.class);
     private final MessageService messageService;
 
     @Autowired
-    public MainController(MessageService messageService) {
+    public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }
 

@@ -1,6 +1,6 @@
 package com.whitetail.learningspring;
 
-import com.whitetail.learningspring.controller.MainController;
+import com.whitetail.learningspring.controller.MessageController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +26,7 @@ class ApplicationTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private MainController controller;
+    private MessageController controller;
 
     @Test
     void contextLoads() {
