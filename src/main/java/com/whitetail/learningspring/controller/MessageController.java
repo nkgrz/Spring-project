@@ -1,6 +1,5 @@
 package com.whitetail.learningspring.controller;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.MessageService;
@@ -48,11 +47,7 @@ public class MessageController {
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model) {
         Page<Message> page;
-        if (tag != null && !tag.isEmpty()) {
-            page = messageService.findByTag(tag, pageable);
-        } else {
-            page = messageService.findAll(pageable);
-        }
+        page = messageService.getMessages(tag, pageable);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("tag", tag);
@@ -75,14 +70,7 @@ public class MessageController {
             model.mergeAttributes(errorsMap);
             model.addAttribute("message", message);
         } else {
-            if (file != null && !file.isEmpty()) {
-                String fileName = messageService.saveImage(file);
-                message.setFilename(fileName);
-            }
-            if (newTag != null) {
-                message.setTag(newTag);
-            }
-            messageService.save(message);
+            messageService.addNewMessage(message, newTag, file);
             model.addAttribute("message", null);
         }
 
@@ -124,27 +112,8 @@ public class MessageController {
                                 @RequestParam("file") MultipartFile file
     ) throws IOException {
         if (message.getAuthor().equals(currentUser)) {
-            boolean isChanged = false;
-            if (!StringUtil.isNullOrEmpty(text)) {
-                message.setText(text);
-                isChanged = true;
-            }
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                message.setTag(tag);
-                isChanged = true;
-            }
-            if (file != null && !file.isEmpty()) {
-                messageService.deleteFile(message.getFilename());
-                String fileName = messageService.saveImage(file);
-                message.setFilename(fileName);
-                isChanged = true;
-            }
-
-            if (isChanged) {
-                messageService.save(message);
-            }
+            messageService.saveMessage(message, text, tag, file, true);
         }
-
         return "redirect:/user-messages/" + user;
     }
 }
