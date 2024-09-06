@@ -2,6 +2,8 @@ package com.whitetail.learningspring.service;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.whitetail.learningspring.domain.Message;
+import com.whitetail.learningspring.domain.User;
+import com.whitetail.learningspring.domain.dto.MessageDto;
 import com.whitetail.learningspring.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -32,15 +35,11 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public Page<Message> findAll(Pageable pageable) {
-        return messageRepository.findAll(pageable);
-    }
-
-    public Page<Message> getMessages(String tag, Pageable pageable) {
+    public Page<MessageDto> getMessages(Pageable pageable, User user, String tag) {
         if (tag != null && !tag.isEmpty()) {
-            return messageRepository.findByTag(tag, pageable);
+            return messageRepository.findByTag(pageable, tag, user);
         } else {
-            return messageRepository.findAll(pageable);
+            return messageRepository.findAll(pageable, user);
         }
     }
 
@@ -73,8 +72,8 @@ public class MessageService {
         }
     }
 
-    public Page<Message> findMessagesByUser(Long userId, Pageable pageable) {
-        return messageRepository.findByAuthor_Id(userId, pageable);
+    public Page<MessageDto> findMessagesByUser(Pageable pageable, User user, User currentUser) {
+        return messageRepository.findByUser(pageable, user, currentUser);
     }
 
     public String saveImage(MultipartFile file) throws IOException {
@@ -125,5 +124,16 @@ public class MessageService {
             deleteFile(message.getFilename());
             messageRepository.deleteMessageById(message.getId());
         }
+    }
+
+    public void likeMessage(Message message, User user) {
+        Set<User> likes = message.getLikes();
+        if (likes.contains(user)) {
+            likes.remove(user);
+        } else {
+            likes.add(user);
+        }
+        message.setLikes(likes);
+        messageRepository.save(message);
     }
 }
