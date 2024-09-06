@@ -12,4 +12,5 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     void deleteByAuthor_Id(Long userId);
     List<Message> findByAuthor_Id(Long userId);
     Page<Message> findByAuthor_Id(Long userId, Pageable pageable);
+    void deleteMessageById(Long userId);
 }

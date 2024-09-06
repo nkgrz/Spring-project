@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -99,7 +101,6 @@ public class MessageService {
             messages = messageRepository.findAll();
             messageRepository.deleteAll();
         }
-        // Удаляем все сообщения и связанные с ними файлы
         messages.forEach(message -> {
             String filename = message.getFilename();
             deleteFile(filename);
@@ -110,10 +111,19 @@ public class MessageService {
         if (filename != null && !filename.isEmpty()) {
             Path filePath = Paths.get(uploadPath, filename);
             try {
-                Files.deleteIfExists(filePath); // Удаляем файл, если он существует
+                Files.deleteIfExists(filePath);
             } catch (IOException e) {
                 throw new RuntimeException("Could not delete file: " + filename, e);
             }
+        }
+    }
+
+    @Transactional
+    public void deleteMessage(Long messageId, Long userId) {
+        Message message = messageRepository.findById(messageId).orElse(null);
+        if (message != null && Objects.equals(message.getAuthor().getId(), userId)) {
+            deleteFile(message.getFilename());
+            messageRepository.deleteMessageById(message.getId());
         }
     }
 }
