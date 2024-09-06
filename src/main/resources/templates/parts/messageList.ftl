@@ -25,6 +25,10 @@
                             <#if msg.author.id == currentUserId>
                                 <a class="btn btn-light btn-sm"
                                    href="/user-messages/${msg.author.id}?message=${msg.id}">Edit</a>
+                                <form action="/user-messages/delete-msg/${msg.id}" method="post" style="display:inline;">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                    <button class="btn btn-light btn-sm" type="submit">del</button>
+                                </form>
                             </#if>
                         </div>
                     </div>
