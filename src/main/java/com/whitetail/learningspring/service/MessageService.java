@@ -1,5 +1,6 @@
 package com.whitetail.learningspring.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +30,45 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public void save(Message message) {
-        messageRepository.save(message);
-    }
-
     public Page<Message> findAll(Pageable pageable) {
         return messageRepository.findAll(pageable);
     }
 
-    public Page<Message> findByTag(String tag, Pageable pageable) {
-        return messageRepository.findByTag(tag, pageable);
+    public Page<Message> getMessages(String tag, Pageable pageable) {
+        if (tag != null && !tag.isEmpty()) {
+            return messageRepository.findByTag(tag, pageable);
+        } else {
+            return messageRepository.findAll(pageable);
+        }
+    }
+
+    public void addNewMessage(Message message, String tag, MultipartFile file) throws IOException {
+        saveMessage(message, null, tag, file, false);
+    }
+
+    public void saveMessage(Message message, String text,
+                            String tag, MultipartFile file,
+                            boolean isUpdate) throws IOException {
+        boolean isChanged = false;
+
+        if (!StringUtil.isNullOrEmpty(text)) {
+            message.setText(text);
+            isChanged = true;
+        }
+        if (tag != null) {
+            message.setTag(tag);
+            isChanged = true;
+        }
+        if (file != null && !file.isEmpty()) {
+            deleteFile(message.getFilename());
+            String fileName = saveImage(file);
+            message.setFilename(fileName);
+            isChanged = true;
+        }
+
+        if (!isUpdate || isChanged) {
+            messageRepository.save(message);
+        }
     }
 
     public Page<Message> findMessagesByUser(Long userId, Pageable pageable) {
