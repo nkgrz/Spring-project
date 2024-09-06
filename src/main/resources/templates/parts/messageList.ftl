@@ -20,16 +20,37 @@
                                          style="max-width: 100%; height: auto;"/>
                                 </div>
                             </#if>
-                            <a class="badge bg-secondary" id="msg_tag" style="text-decoration: none;"
-                               href="/main?tag=${msg.tag}">${msg.tag}</a>
-                            <#if msg.author.id == currentUserId>
-                                <a class="btn btn-light btn-sm"
-                                   href="/user-messages/${msg.author.id}?message=${msg.id}">Edit</a>
-                                <form action="/user-messages/delete-msg/${msg.id}" method="post" style="display:inline;">
-                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                                    <button class="btn btn-light btn-sm" type="submit">del</button>
-                                </form>
-                            </#if>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <#if msg.tag??>
+                                        <a class="badge bg-secondary me-3" id="msg_tag" style="text-decoration: none;"
+                                           href="/main?tag=${msg.tag}">${msg.tag}</a>
+                                    </#if>
+
+                                    <div class="like-container d-flex align-items-center">
+                                        <a href="/messages/${msg.id}/like">
+                                            <#if msg.meLiked>
+                                                <i class="fa-solid fa-heart me-2"></i>
+                                            <#else >
+                                                <i class="fa-regular fa-heart me-2"></i>
+                                            </#if>
+                                        </a>
+                                        <span>${msg.likes}</span>
+                                    </div>
+                                </div>
+                                <#if msg.author.id == currentUserId>
+                                    <div>
+                                        <a class="btn btn-sm fa-solid fa-pencil"
+                                           href="/user-messages/${msg.author.id}?message=${msg.id}"> Edit</a>
+                                        <form action="/user-messages/delete-msg/${msg.id}" method="post"
+                                              style="display:inline;">
+                                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                            <button class="btn fa-solid fa-trash-can-arrow-up" type="submit"></button>
+                                        </form>
+                                    </div>
+                                </#if>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -43,7 +64,7 @@
             const messagesContainer = document.getElementById('messagesContainer');
             setTimeout(function () {
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 100);
+            }, 1);
         });
     </script>
 <#else>
