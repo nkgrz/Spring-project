@@ -9,6 +9,7 @@
               rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
               crossorigin="anonymous"/>
+        <script src="https://kit.fontawesome.com/e1da6c7e94.js" crossorigin="anonymous"></script>
     </head>
     <style>
         .full-height {
