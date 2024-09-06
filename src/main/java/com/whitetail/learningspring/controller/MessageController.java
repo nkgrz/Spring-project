@@ -2,6 +2,7 @@ package com.whitetail.learningspring.controller;
 
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.User;
+import com.whitetail.learningspring.domain.dto.MessageDto;
 import com.whitetail.learningspring.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -17,11 +18,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.Map;
@@ -44,11 +45,11 @@ public class MessageController {
 
     @GetMapping("/main")
     public String mainMap(
+            @AuthenticationPrincipal User user,
             @RequestParam(required = false, defaultValue = "") String tag,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model) {
-        Page<Message> page;
-        page = messageService.getMessages(tag, pageable);
+        Page<MessageDto> page = messageService.getMessages(pageable, user, tag);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("tag", tag);
@@ -75,9 +76,11 @@ public class MessageController {
             model.addAttribute("message", null);
         }
 
-        model.addAttribute("url", "/main");
         Pageable firstPageable = PageRequest.of(0, pageable.getPageSize(), Sort.by("id").descending());
-        model.addAttribute("page", messageService.findAll(firstPageable));
+        Page<MessageDto> page = messageService.getMessages(firstPageable, user, null);
+
+        model.addAttribute("url", "/main");
+        model.addAttribute("page", page);
         return "main";
     }
 
@@ -93,7 +96,7 @@ public class MessageController {
                                @RequestParam(required = false) Message message,
                                @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                Model model) {
-        Page<Message> page = messageService.findMessagesByUser(user.getId(), pageable);
+        Page<MessageDto> page = messageService.findMessagesByUser(pageable, user, currentUser);
         model.addAttribute("requestedUser", user);
         model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
         model.addAttribute("subscribersCount", user.getSubscribers().size());
@@ -126,6 +129,20 @@ public class MessageController {
         messageService.deleteMessage(messageId, currentUser.getId());
 
         return "redirect:" + request.getHeader("Referer");
+    }
+
+    @GetMapping("messages/{message}/like")
+    public String like(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Message message,
+            RedirectAttributes redirectAttributes,
+            @RequestHeader(required = false) String referer
+    ) {
+        messageService.likeMessage(message, currentUser);
+        UriComponents components = UriComponentsBuilder.fromHttpUrl((referer)).build();
+        components.getQueryParams()
+                .forEach(redirectAttributes::addAttribute);
+        return "redirect:" + components.getPath();
     }
 
 }
