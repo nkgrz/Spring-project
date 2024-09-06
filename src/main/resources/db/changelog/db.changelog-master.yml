@@ -165,3 +165,26 @@ databaseChangeLog:
                                         primaryKey: true
                                         foreignKeyName: channel_id_user_fk
                                         references: usr(id)
+    -   changeSet:
+            id: add-message-likes-table
+            author: nkgrz
+            changes:
+                -   createTable:
+                        tableName: message_likes
+                        columns:
+                            -   column:
+                                    name: message_id
+                                    type: bigint
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                                        foreignKeyName: message_id_fk
+                                        references: message(id)
+                            -   column:
+                                    name: user_id
+                                    type: bigint
+                                    constraints:
+                                        nullable: false
+                                        primaryKey: true
+                                        foreignKeyName: user_id_fk
+                                        references: usr(id)
