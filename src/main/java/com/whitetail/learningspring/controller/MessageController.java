@@ -3,6 +3,7 @@ package com.whitetail.learningspring.controller;
 import com.whitetail.learningspring.domain.Message;
 import com.whitetail.learningspring.domain.User;
 import com.whitetail.learningspring.service.MessageService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,11 +93,12 @@ public class MessageController {
                                @RequestParam(required = false) Message message,
                                @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                Model model) {
+        Page<Message> page = messageService.findMessagesByUser(user.getId(), pageable);
         model.addAttribute("requestedUser", user);
         model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
         model.addAttribute("subscribersCount", user.getSubscribers().size());
         model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
-        model.addAttribute("page", messageService.findMessagesByUser(user.getId(), pageable));
+        model.addAttribute("page", page);
         model.addAttribute("url", "/user-messages/" + user.getId());
         model.addAttribute("message", message);
         model.addAttribute("isCurrentUser", user.equals(currentUser));
@@ -116,4 +118,14 @@ public class MessageController {
         }
         return "redirect:/user-messages/" + user;
     }
+
+    @PostMapping("/user-messages/delete-msg/{messageId}")
+    public String deleteMessage(@AuthenticationPrincipal User currentUser,
+                                @PathVariable Long messageId,
+                                HttpServletRequest request) {
+        messageService.deleteMessage(messageId, currentUser.getId());
+
+        return "redirect:" + request.getHeader("Referer");
+    }
+
 }
