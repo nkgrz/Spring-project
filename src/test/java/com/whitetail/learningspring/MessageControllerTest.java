@@ -72,7 +72,7 @@ public class MessageControllerTest {
                 .andExpect(xpath("//div[@id='messagesContainer']/div").nodeCount(5))
                 .andExpect(xpath("//div[@id='messagesContainer']//div[@class='card-body' and @data-id='10']").exists())
                 .andExpect(xpath("//div[@id='messagesContainer']//div[@data-id='10']/p").string("new msg"))
-                .andExpect(xpath("//div[@id='messagesContainer']//div[@data-id='10']/a[@id='msg_tag']").string("newTag"));
+                .andExpect(xpath("//div[@id='messagesContainer']//div[@data-id='10']//a[@id='msg_tag']").string("newTag"));
     }
 
 }

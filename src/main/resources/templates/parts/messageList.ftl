@@ -45,7 +45,7 @@
                                            href="/user-messages/${msg.author.id}?message=${msg.id}"> Edit</a>
                                         <form action="/user-messages/delete-msg/${msg.id}" method="post"
                                               style="display:inline;">
-                                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                             <button class="btn fa-solid fa-trash-can-arrow-up" type="submit"></button>
                                         </form>
                                     </div>
