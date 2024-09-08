@@ -1,4 +1,4 @@
-package com.whitetail.learningspring.domain;
+package com.whitetail.learningspring.entity;
 
 import com.whitetail.learningspring.validation.PasswordValidationGroup;
 import com.whitetail.learningspring.validation.UsernameEmailValidationGroup;

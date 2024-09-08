@@ -1,8 +1,8 @@
-package com.whitetail.learningspring.domain.dto;
+package com.whitetail.learningspring.entity.dto;
 
-import com.whitetail.learningspring.domain.Message;
-import com.whitetail.learningspring.domain.User;
-import com.whitetail.learningspring.domain.util.MessageHelper;
+import com.whitetail.learningspring.entity.Message;
+import com.whitetail.learningspring.entity.User;
+import com.whitetail.learningspring.entity.util.MessageHelper;
 import lombok.Getter;
 
 @Getter

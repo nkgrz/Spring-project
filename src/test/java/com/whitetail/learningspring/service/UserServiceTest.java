@@ -1,7 +1,7 @@
 package com.whitetail.learningspring.service;
 
-import com.whitetail.learningspring.domain.Role;
-import com.whitetail.learningspring.domain.User;
+import com.whitetail.learningspring.entity.Role;
+import com.whitetail.learningspring.entity.User;
 import com.whitetail.learningspring.repository.UserRepository;
 import com.whitetail.learningspring.validation.ValidationException;
 import org.junit.jupiter.api.Test;

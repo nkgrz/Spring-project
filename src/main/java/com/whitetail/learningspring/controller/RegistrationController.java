@@ -1,6 +1,6 @@
 package com.whitetail.learningspring.controller;
 
-import com.whitetail.learningspring.domain.User;
+import com.whitetail.learningspring.entity.User;
 import com.whitetail.learningspring.service.UserService;
 import com.whitetail.learningspring.validation.AllValidationGroups;
 import com.whitetail.learningspring.validation.ValidationException;

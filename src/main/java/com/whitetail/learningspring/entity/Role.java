@@ -1,4 +1,4 @@
-package com.whitetail.learningspring.domain;
+package com.whitetail.learningspring.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 

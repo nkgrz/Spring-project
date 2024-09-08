@@ -1,6 +1,6 @@
-package com.whitetail.learningspring.domain;
+package com.whitetail.learningspring.entity;
 
-import com.whitetail.learningspring.domain.util.MessageHelper;
+import com.whitetail.learningspring.entity.util.MessageHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

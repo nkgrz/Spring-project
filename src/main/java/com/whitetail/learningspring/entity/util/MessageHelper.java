@@ -1,6 +1,6 @@
-package com.whitetail.learningspring.domain.util;
+package com.whitetail.learningspring.entity.util;
 
-import com.whitetail.learningspring.domain.User;
+import com.whitetail.learningspring.entity.User;
 
 public abstract class MessageHelper {
     public static String getAuthorName(User author) {

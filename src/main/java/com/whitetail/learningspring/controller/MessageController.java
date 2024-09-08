@@ -1,13 +1,11 @@
 package com.whitetail.learningspring.controller;
 
-import com.whitetail.learningspring.domain.Message;
-import com.whitetail.learningspring.domain.User;
-import com.whitetail.learningspring.domain.dto.MessageDto;
+import com.whitetail.learningspring.entity.Message;
+import com.whitetail.learningspring.entity.User;
+import com.whitetail.learningspring.entity.dto.MessageDto;
 import com.whitetail.learningspring.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +28,6 @@ import java.util.Map;
 @Controller
 public class MessageController {
 
-    private static final Logger log = LoggerFactory.getLogger(MessageController.class);
     private final MessageService messageService;
 
     @Autowired

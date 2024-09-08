@@ -1,9 +1,9 @@
 package com.whitetail.learningspring.service;
 
 import ch.qos.logback.core.util.StringUtil;
-import com.whitetail.learningspring.domain.Message;
-import com.whitetail.learningspring.domain.User;
-import com.whitetail.learningspring.domain.dto.MessageDto;
+import com.whitetail.learningspring.entity.Message;
+import com.whitetail.learningspring.entity.User;
+import com.whitetail.learningspring.entity.dto.MessageDto;
 import com.whitetail.learningspring.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
