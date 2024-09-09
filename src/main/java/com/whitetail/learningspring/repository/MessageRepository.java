@@ -19,33 +19,36 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     void deleteMessageById(Long userId);
 
-    @Query("select new com.whitetail.learningspring.entity.dto.MessageDto(" +
-            "        m, " +
-            "        count(ml), " +
-            "        (sum(case when ml = :user then 1 else 0 end)  > 0) " +
-            "        ) " +
-            "        from Message m left join m.likes ml " +
-            "        group by m ")
+    @Query("""
+            select new com.whitetail.learningspring.entity.dto.MessageDto(
+                            m,
+                            count(ml),
+                            (sum(case when ml = :user then 1 else 0 end)  > 0)
+                        )
+                        from Message m left join m.likes ml
+                        group by m""")
     Page<MessageDto> findAll(Pageable pageable, @Param("user") User user);
 
 
-    @Query("select new com.whitetail.learningspring.entity.dto.MessageDto(" +
-            "        m, " +
-            "        count(ml), " +
-            "        (sum(case when ml = :user then 1 else 0 end)  > 0) " +
-            "        ) " +
-            "        from Message m left join m.likes ml " +
-            "        where m.tag = :tag " +
-            "        group by m ")
+    @Query("""
+            select new com.whitetail.learningspring.entity.dto.MessageDto(
+                        m,
+                        count(ml),
+                        (sum(case when ml = :user then 1 else 0 end)  > 0)
+                    )
+                    from Message m left join m.likes ml \
+                    where m.tag = :tag \
+                    group by m\s""")
     Page<MessageDto> findByTag(Pageable pageable, @Param("tag") String tag, @Param("user") User user);
 
-    @Query("select new com.whitetail.learningspring.entity.dto.MessageDto(" +
-            "        m, " +
-            "        count(ml), " +
-            "        (sum(case when ml = :currentUser then 1 else 0 end)  > 0) " +
-            "        ) " +
-            "        from Message m left join m.likes ml " +
-            "        where m.author = :user " +
-            "        group by m ")
+    @Query("""
+            select new com.whitetail.learningspring.entity.dto.MessageDto(
+                        m,
+                        count(ml),
+                        (sum(case when ml = :currentUser then 1 else 0 end)  > 0)
+                    )
+                    from Message m left join m.likes ml
+                    where m.author = :user
+                    group by m\s""")
     Page<MessageDto> findByUser(Pageable pageable, @Param("user") User user, @Param("currentUser") User currentUser);
 }
