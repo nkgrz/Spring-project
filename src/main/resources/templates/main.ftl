@@ -19,12 +19,14 @@
 
     <#include "parts/messageList.ftl" />
 
-    <div class="mb3">
-        <form method="post" action="delete">
-            <button type="submit" class="btn btn-warning">Delete all message</button>
-            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-        </form>
-    </div>
+    <#if isAdmin>
+        <div class="my-3">
+            <form method="post" action="delete">
+                <button type="submit" class="btn btn-warning">Delete all message</button>
+                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+            </form>
+        </div>
+    </#if>
 
 
 </@c.page>
