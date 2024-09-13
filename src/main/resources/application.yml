@@ -24,6 +24,10 @@ spring:
         password: ${MAIL_PASSWORD}
         port: 465
         protocol: smtps
+    servlet:
+        multipart:
+            max-file-size: 5MB
+            max-request-size: 10MB
 upload:
     path: /home/parallels/app/uploads/
 app:
