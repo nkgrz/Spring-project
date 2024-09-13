@@ -3,7 +3,8 @@
     <@p.pager url page/>
     <div class="container mt-4 d-flex justify-content-center">
         <div id="messagesContainer" class="row"
-             style="max-height: 900px; overflow-y: auto; width: 100%; max-width: 700px; border: 2px solid #ccc; padding: 10px; border-radius: 8px;">
+             style="max-height: 50vh; overflow-y: auto; width: 80vh;
+             border: 2px solid #ccc; padding: 10px; border-radius: 8px;">
             <#list page.content?reverse as msg>
                 <div class="col-12 mb-4"
                      style="display: flex;
@@ -32,7 +33,7 @@
                                         <a href="/messages/${msg.id}/like">
                                             <#if msg.meLiked>
                                                 <i class="fa-solid fa-heart me-2"></i>
-                                            <#else >
+                                            <#else>
                                                 <i class="fa-regular fa-heart me-2"></i>
                                             </#if>
                                         </a>
