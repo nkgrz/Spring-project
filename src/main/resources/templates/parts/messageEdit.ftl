@@ -1,6 +1,6 @@
 <#macro messageEditor msg>
     <a class="btn btn-primary" data-toggle="collapse" href="#collapseForm" role="button" aria-expanded="false"
-       aria-controls="collapseExample">
+       aria-controls="collapseForm">
         ${msg}
     </a>
     <div class="collapse <#if message??>show</#if>" id="collapseForm">
